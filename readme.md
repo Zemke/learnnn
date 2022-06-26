@@ -5,7 +5,8 @@ All of the ranking information
 
 This is all of the information a ranking system has:
 
-* games * home user
+* games
+  * home user
   * away user
   * won rounds
   * lost rounds
