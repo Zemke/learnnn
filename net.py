@@ -5,7 +5,7 @@ import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from data import NnnData
+import data
 
 class Net(nn.Module):
 
@@ -27,24 +27,17 @@ class Net(nn.Module):
 
 
 def train(net, epochs):
-  # ReLU
-  # MSELoss
-  # Adam or SGD
-
-  d39 = NnnData(39)
-  d39[0]
-  return
-
-  optimizer = optim.SGD(net.parameters(), lr=0.01)
+  optim = torch.optim.SGD(net.parameters(), lr=0.01)
   mse = nn.MSELoss()
+  dl = data.load()
 
-  for i in range(epochs):
-    optimizer.zero_grad()
-    #x = 
-    y = net(x)
-    loss = mse(y, x)
-    loss.backward()
-    optimizier.step()
+  for epoch in range(epochs):
+    for i,(x,y) in enumerate(dl):
+      optim.zero_grad()
+      res = net(x)
+      loss = mse(res, y)
+      loss.backward()
+      optim.step()
 
 
 if __name__ == "__main__":
