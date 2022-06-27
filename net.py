@@ -30,8 +30,8 @@ class Net(nn.Module):
 def train(net, epochs):
   optim = torch.optim.SGD(
     net.parameters(),
-    lr=1e-4,
-    weight_decay=1e-9,
+    lr=1e-2,
+    weight_decay=1e-5,
     momentum=0.9)
   mse = nn.MSELoss()
   dl = data.load()
@@ -47,16 +47,16 @@ def train(net, epochs):
       sqrt_loss = sqrt(loss.item())
       print(sqrt_loss)
       losses_metric.append(sqrt_loss)
-      nn.utils.clip_grad_norm_(
-        net.parameters(),
-        10000,
-        error_if_nonfinite=True)
+      #nn.utils.clip_grad_norm_(
+      #  net.parameters(),
+      #  10000,
+      #  error_if_nonfinite=True)
       optim.step()
 
   print(losses_metric)
   if os.environ.get('PLT', '0') == '1':
     import matplotlib.pyplot as plt
-    plt.ylim(top=1000)
+    #plt.ylim(top=1000)
     plt.plot(losses_metric)
     plt.show()
 

@@ -2,6 +2,7 @@
 
 import os
 import pandas as pd
+from minmax import MinMaxNorm
 
 import torch
 from torch.utils.data import Dataset
@@ -13,7 +14,7 @@ DD = os.environ.get('DEBUG', '0') == '1'
 
 class NNNData(Dataset):
 
-  def __init__(self, season):
+  def __init__(self, season, mmn = None):
     """
     * user
       * won rounds
@@ -29,6 +30,7 @@ class NNNData(Dataset):
       * total rounds
       * total users (with games played)
     """
+    self.mmn = mmn
     self.labels = pd.read_csv(f'csv/ranking_nnn{season}.tsv', sep='\t')
     self.labels = self.labels[self.labels['Rounds'] != '0-(0)']
     with open(f'csv/games_nnn{season}.csv', 'r') as f:
@@ -96,7 +98,12 @@ class NNNData(Dataset):
     u,p = self.labels.iloc[idx, 1:3]
     pu = [pu for pu in self.puu if pu['u'] == u][0]
     DD and print(pu['u'], p)
-    return self.to_input(pu), torch.tensor(p).float()
+    if self.mmn is not None and self.mmn.ready:
+      return \
+        self.mmn.norm_x(self.to_input(pu)), \
+        self.mmn.norm_y(torch.tensor(p).float())
+    else:
+      return self.to_input(pu), torch.tensor(p).float()
 
 
   def to_input(self, pu):
@@ -115,10 +122,11 @@ class NNNData(Dataset):
 
 
 def load():
-  #ds = sum([NNNData(s) for s in ['39', '40', '41current']])
-  ds = NNNData('39') + NNNData('40') + NNNData('41current')
+  mmn = MinMaxNorm()
+  dss = [NNNData(s, mmn) for s in ['39', '40', '41current']]
+  mmn(dss)
   dl = DataLoader(
-    ds,
+    dss[0] + dss[1] + dss[2],
     batch_size=int(os.environ.get('BATCH_SIZE', 8)),
     shuffle=True)
   return dl
