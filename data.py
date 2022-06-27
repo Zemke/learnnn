@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from torchvision import datasets
+import torch.nn.functional as F
 
 DD = os.environ.get('DEBUG', '0') == '1'
 
