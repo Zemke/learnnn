@@ -32,7 +32,7 @@ def train(net, epochs):
   optim = torch.optim.SGD(
     net.parameters(),
     lr=1e-4,
-    weight_decay=1e-3,
+    weight_decay=1e-9,
     momentum=0.9)
   mse = nn.MSELoss()
   dl = data.load()
@@ -41,6 +41,7 @@ def train(net, epochs):
   for epoch in range(epochs):
     for i,(x,y) in enumerate(dl):
       optim.zero_grad()
+      net.train(True)
       y_pred = net(x)
       loss = mse(y_pred.squeeze(), y)
       loss.backward()
@@ -67,9 +68,9 @@ def infer(net, ds):
   res = []
   for pu in ds.puu:
     net.eval()
-    res.append([pu['u'], net(ds.to_input(pu)).item()])
-  sorted(res, key=lambda x: x[1])
-  print(res)
+    print(net(ds.to_input(pu)))
+    res.append((net(ds.to_input(pu)).item(), pu['u']))
+  print(sorted(res))
 
 
 if __name__ == "__main__":
