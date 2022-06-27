@@ -95,7 +95,10 @@ class NNNData(Dataset):
     u,p = self.labels.iloc[idx, 1:3]
     pu = [pu for pu in self.puu if pu['u'] == u][0]
     DD and print(pu['u'], p)
-    # TODO maybe there should be normalization
+    return self.to_input(pu), torch.tensor(p).float()
+
+
+  def to_input(self, pu):
     return torch.tensor([
       pu['won'],
       pu['lost'],
@@ -107,7 +110,7 @@ class NNNData(Dataset):
       pu['oppOpps'],
       self.total,
       self.total_users,
-    ]).float(), torch.tensor(p).float()
+    ]).float()
 
 
 def load():
