@@ -27,7 +27,11 @@ class Net(nn.Module):
 
 
 def train(net, epochs):
-  optim = torch.optim.SGD(net.parameters(), lr=0.01)
+  optim = torch.optim.SGD(
+    net.parameters(),
+    lr=1e-4,
+    weight_decay=1e-3,
+    momentum=0.9)
   mse = nn.MSELoss()
   dl = data.load()
 
