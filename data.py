@@ -10,19 +10,6 @@ from torchvision import datasets
 
 DD = os.environ.get('DEBUG', '0') == '1'
 
-class PerUser:
-
-  def __init__(self, u):
-    self.u = u
-    self.won = 0
-    self.lost = 0
-    self.total = 0
-    self.opps = set()
-
-
-  def __repr__(self):
-    return f'PerUser(u={u}, won={won}, lost={lost}, '
-
 
 class NNNData(Dataset):
 
