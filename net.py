@@ -45,7 +45,6 @@ def train(net, epochs):
       loss = mse(y_pred.squeeze(), y)
       loss.backward()
       sqrt_loss = sqrt(loss.item())
-      print(sqrt_loss)
       losses_metric.append(sqrt_loss)
       optim.step()
 
