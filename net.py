@@ -63,7 +63,7 @@ def infer(net, ds):
     net.eval()
     y_pred = net(ds.to_input(pu)).item()
     res.append((y_pred, pu['u']))
-  print(sorted(res))
+  [print(x) for x in sorted(res)]
 
 
 if __name__ == "__main__":
