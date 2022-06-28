@@ -7,7 +7,7 @@ from minmax import MinMaxNorm
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-import torch.nn.functional as F
+
 
 DD = os.environ.get('DEBUG', '0') == '1'
 
