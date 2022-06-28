@@ -47,10 +47,6 @@ def train(net, epochs):
       sqrt_loss = sqrt(loss.item())
       print(sqrt_loss)
       losses_metric.append(sqrt_loss)
-      #nn.utils.clip_grad_norm_(
-      #  net.parameters(),
-      #  10000,
-      #  error_if_nonfinite=True)
       optim.step()
 
   print(losses_metric)
