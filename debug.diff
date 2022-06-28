@@ -1,0 +1,91 @@
+diff --git a/data.py b/data.py
+index a756dab..89fc33b 100644
+--- a/data.py
++++ b/data.py
+@@ -54,7 +54,6 @@ class NNNData(Dataset):
+           'oppLost': 0,
+           'oppTotal': 0,
+           'oppOpps': 0,
+-          'points': 0,
+         }
+         opps = []
+         DD and print('user ' + u)
+@@ -86,9 +85,6 @@ class NNNData(Dataset):
+             pu['oppTotal'] += opp['total']
+             pu['oppOpps'] += len(opp['opps'])
+ 
+-      pu['points'] = \
+-        self.labels[self.labels['Nickname'] == pu['u']]['Points'].iloc[0]
+-
+       self.total = sum([pu['total'] for pu in self.puu]) // 2
+       self.total_users = len(self.puu)
+ 
+@@ -105,12 +101,9 @@ class NNNData(Dataset):
+     pu = [pu for pu in self.puu if pu['u'] == u][0]
+     DD and print(pu['u'], p)
+     if self.mmn is not None and self.mmn.ready:
+-      res =  \
++      return \
+         self.mmn.norm_x(self.to_input(pu)), \
+         self.mmn.norm_y(torch.tensor(p).float())
+-      res[0][-3] = self.mmn.norm_y(torch.tensor(p).float())
+-      assert res[0][-3] == res[1]
+-      return res
+     else:
+       return self.to_input(pu), torch.tensor(p).float()
+ 
+@@ -125,7 +118,6 @@ class NNNData(Dataset):
+       pu['oppLost'],
+       pu['oppTotal'],
+       pu['oppOpps'],
+-      pu['points'],
+       self.total,
+       self.total_users,
+     ]).float()
+@@ -133,10 +125,10 @@ class NNNData(Dataset):
+ 
+ def load():
+   mmn = MinMaxNorm()
+-  dss = [NNNData(s, mmn) for s in ['39']]
++  dss = [NNNData(s, mmn) for s in ['39', '40', '41current']]
+   mmn(dss)
+   dl = DataLoader(
+-    dss[0],
++    dss[0] + dss[1] + dss[2],
+     batch_size=int(os.environ.get('BATCH_SIZE', 8)),
+     shuffle=True)
+   return dl
+diff --git a/minmax.py b/minmax.py
+index 1e6b3f8..2daf34c 100644
+--- a/minmax.py
++++ b/minmax.py
+@@ -35,8 +35,6 @@ class MinMaxNorm:
+ 
+ if __name__ == '__main__':
+   mmn = MinMaxNorm()
+-  from data import NNNData
+-  mmn([NNNData(s, mmn) for s in ['39']])
+ 
+   print('x_mins', mmn.x_mins)
+   print('x_maxs', mmn.x_maxs)
+diff --git a/net.py b/net.py
+index 7af6dcd..1cc7613 100644
+--- a/net.py
++++ b/net.py
+@@ -14,7 +14,7 @@ class Net(nn.Module):
+   def __init__(self):
+     super(Net, self).__init__()
+     self.fc = nn.Sequential(
+-      nn.Linear(11, 50),
++      nn.Linear(10, 50),
+       nn.ReLU(inplace=True),
+       nn.Linear(50, 100),
+       nn.ReLU(inplace=True),
+@@ -62,7 +62,6 @@ def infer(net, ds):
+   for pu in ds.puu:
+     net.eval()
+     y_pred = net(ds.to_input(pu)).item()
+-    print(pu['u'], y_pred, pu['points'])
+     res.append((y_pred, pu['u']))
+   [print(x) for x in sorted(res)]
+ 
