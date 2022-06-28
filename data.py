@@ -40,6 +40,8 @@ class NNNData(Dataset):
     self.puu = []
     for l in ll:
       for u in l[:2]:
+        if u == 'Pellefot':
+          continue
         if u in [pu['u'] for pu in self.puu]:
           continue
         pu = {
