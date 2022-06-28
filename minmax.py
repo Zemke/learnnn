@@ -24,11 +24,13 @@ class MinMaxNorm:
 
 
   def norm_x(self, x):
-    return (x - self.x_mins) / (self.x_maxs - self.x_mins)
+    return torch.nan_to_num(
+      (x - self.x_mins) / (self.x_maxs - self.x_mins), 1.)
 
 
   def norm_y(self, y):
-    return (y - self.y_mins) / (self.y_maxs - self.y_mins)
+    return torch.nan_to_num(
+      (y - self.y_mins) / (self.y_maxs - self.y_mins), 1.)
 
 
 if __name__ == '__main__':
