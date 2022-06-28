@@ -63,7 +63,6 @@ def train(net, epochs):
 
 @torch.no_grad()
 def infer(net, ds):
-  from pprint import pprint
   res = []
   for pu in ds.puu:
     net.eval()
