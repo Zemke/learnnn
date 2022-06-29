@@ -87,6 +87,7 @@ if __name__ == "__main__":
     [print(x) for x in sorted(res)]
 
   if os.environ.get('ASSESS', '0') == '1':
+    acc = []
     for s in ['39', '40', '41current']:
       ds = data.NNNData(s)
       mmn = MinMaxNorm()([ds])
@@ -102,5 +103,7 @@ if __name__ == "__main__":
         pu_p = [pu['points'] for pu in ds.puu if pu['u'] == u][0]
         diffsum += (p - pu_p) ** 2
       rmse = sqrt(diffsum / len(nn))
+      acc.append(rmse ** 2)
       print('rmse', s, rmse)
+    print('rmse acc', sqrt(sum(acc) / len(acc)))
 
