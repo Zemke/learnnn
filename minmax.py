@@ -33,6 +33,13 @@ class MinMaxNorm:
       (y - self.y_mins) / (self.y_maxs - self.y_mins), 1.)
 
 
+  def norm_bounded_y(self, a, b, y):
+    return a + ( \
+      ((y - self.y_mins) * (b - a)) \
+      / (self.y_maxs - self.y_mins) \
+    )
+
+
 if __name__ == '__main__':
   mmn = MinMaxNorm()
 

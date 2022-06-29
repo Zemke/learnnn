@@ -7,7 +7,9 @@ from math import sqrt
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 import data
+from minmax import MinMaxNorm
 
 class Net(nn.Module):
 
@@ -63,15 +65,42 @@ def infer(net, ds):
     net.eval()
     y_pred = net(ds.to_input(pu)).item()
     res.append((y_pred, pu['u']))
-  [print(x) for x in sorted(res)]
+  return res
+
+
+def norm_bounded(x, mn_p, mx_p, a, b):
+  return a + (((x - mn_p) * (b - a)) / (mx_p - mn_p))
 
 
 if __name__ == "__main__":
   net = Net()
-  print(net)
-  epochs = int(os.environ.get('EPOCHS', 500));
-  print(f'training on {epochs} epochs');
-  train(net, epochs)
-  if os.environ.get('INFER', '0') == '1':
-    infer(net, data.NNNData('39'))
+
+  if os.environ.get('TRAIN', '1') == '1':
+    print(net)
+    epochs = int(os.environ.get('EPOCHS', 500));
+    print(f'training on {epochs} epochs');
+    train(net, epochs)
+
+  s = os.environ.get('INFER', '-1')
+  if s != '-1':
+    res = infer(net, data.NNNData(s))
+    [print(x) for x in sorted(res)]
+
+  if os.environ.get('ASSESS', '0') == '1':
+    for s in ['39', '40', '41current']:
+      ds = data.NNNData(s)
+      mmn = MinMaxNorm()([ds])
+      mx_r, mn_r = mmn.y_maxs, mmn.y_mins
+      res = infer(net, ds)
+      mn_p, mx_p = min([p for p,_ in res]), max([p for p,_ in res])
+      nn = [(norm_bounded(p, mn_p, mx_p, mn_r, mx_r), u) \
+        for p,u in res]
+      assert min([p for p,_ in nn]) == mn_r
+      assert max([p for p,_ in nn]) == mx_r
+      diffsum = 0
+      for p,u in nn:
+        pu_p = [pu['points'] for pu in ds.puu if pu['u'] == u][0]
+        diffsum += (p - pu_p) ** 2
+      rmse = sqrt(diffsum / len(nn))
+      print('rmse', s, rmse)
 
