@@ -64,6 +64,9 @@ class NNNData(Dataset):
             pu['lost'] += l[2]
             pu['opps'].add(l[0])
             pu['total'] += l[2] + l[3]
+
+        pu['points'] = \
+          self.labels[self.labels['Nickname'] == pu['u']]['Points'].iloc[0]
         self.puu.append(pu)
 
       for pu in self.puu:
